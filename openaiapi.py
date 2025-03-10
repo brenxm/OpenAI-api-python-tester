@@ -22,7 +22,7 @@ def get_openai_response(users_prompt, system_content = "You are a helpful assist
                 {"role": "user", "content": users_prompt}
             ],
             response_format={"type": "json_object"},
-            temperature=1.5
+            temperature=1
         )
         return response.choices[0].message
 

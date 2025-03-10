@@ -1,52 +1,34 @@
 from openaiapi import get_openai_response
+from prompts import system_guidelines
+
 
 if __name__ == "__main__":
 
-    system_content = '''
-    You are an AI that helps create concise course outlines. The user will describe a subject or course they want to create. Based on that description, please generate a structured outline with the following format:
+    # Initial description for curriculum generation
+    # Choice to edit, revert, or move forward
+    # IF edit, print -> what changes you want to make
+    # IF revert, go back to Initial description
+    # IF move forward, print -> describe the tone of the teacher
+    # Can go back or generate final lecture object
 
-    Title: [Name of the Course/Subject]
-
-    [Topic 1]
-    - [Subtopics]
-    [Topic 2]
-    - [Subtopics]
-    [Topic 3]
-    - [Subtopics]
-
-    …and so on.
-
-    Guidelines:
-    1. The outline should focus on the essential topics needed to teach or learn the subject effectively.
-    2. Each main topic should have its subtopics comprehensive
-    3. Keep the structure clear and concise. Avoid writing long explanations at this stage—just the titles and bullet points.
-    4. If the user provides a subject, use that as the basis for your outline. If not, choose a relevant subject yourself.
-    5.  Structure the curriculum from basic to advanced topics order. The sequence of topics should be sequentially relevant to promote smooth transition.
-    6. If the user’s prompt is irrelevant or unclear, return it as an error.
-    7. Ensure that your response is in json format:
-
-    {
-    “subject_title”: STRING,
-    “topics”: [
-                        {
-                            “topic_title”: STRING,
-                            “sub_topics”: [
-                                                        “sub_topic_title”: STRING
-                                                    ]
-                        }
-                    ] 
-    }
-
-    format for error:
-    {
-    “error”: “Error response”
-    }
-
-    Please produce the outline accordingly.
-    '''
-    
-
-
-    prompt = "Computer Science"
-    response = get_openai_response(prompt, system_content)
+    # Initial description for curriculum generation
+    prompt = input("What do you want to learn?\n")
+    response = get_openai_response(prompt, system_guidelines["generate_curriculum"], model = "gpt-4o")
     print("OpenAI Response:", response.content)
+
+    prompt = input("Here is the generated list.\nWhat do you want to do now? Press:\n1 to move forward\n2 to make changes\n3 to Go back\n")
+
+    # IF user's accepted the presented curriculum list
+    if prompt == "1":
+        print("good")
+
+    # IF user's wants to make changes   
+    elif prompt == "2":
+        print("good")
+
+    # IF users wants to revert and generated another course outline 
+    elif prompt == "3":
+        print("good")
+    else:
+        prompt = input("Invalid input, please press:\n1 to move forward\n2 to make changes\n3 to Go back\n")
+
