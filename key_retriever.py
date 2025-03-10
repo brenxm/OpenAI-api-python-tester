@@ -1,3 +1,5 @@
+import os
+
 # key location ./api_key.txt
 def load_api_key(filename="api_key.txt"):
     try:
