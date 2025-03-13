@@ -19,6 +19,7 @@ if __name__ == "__main__":
         response = get_openai_response(prompt, system_guidelines["generate_curriculum"], model = "gpt-4o")
 
         # IF API returns error
+        # Error occurs when a misunderstanding/misinterpretation on the AI's part (AI is not getting it)
         if "error" in response.content:
             print("Prompt can't be understood.")
             continue
@@ -34,12 +35,36 @@ if __name__ == "__main__":
 
             # IF user's wants to make changes   
             elif prompt == "2":
-                # TODO: Prompt for modifying the generated list, ensure to embed generated list + prompt
-                print("good")
+                while True:
+                    prompt = input("What changes you want to apply?\n")
+                    response = get_openai_response(prompt, system_guidelines["modify_curriculum"](response.content), model = "gpt-4o")
+                    print(response.content)
+                    print("This is the modified list.\n")
+                    action = input("What do you want to do now?\n1 to move forward\n2 to make changes\n3 to create new curriculum\n")
 
-            # IF users wants to revert and generated another course outline 
+                    if action == "1":
+                        break
+
+                    elif action == "2":
+                        continue
+
+                    elif action == "3":
+                        break
+                    else:
+                        print("Invalid input, try again")
+
+                if action == "3":
+                    print("Reverting to a new curriculum.")
+                    continue
+
+                elif action == "1":
+                    break
+
+                    
+            # IF users wants to revert and generate another course outline 
             elif prompt == "3":
-                break
+                print("Reverting...")
+                continue
 
             # If invalid input
             else:
@@ -50,3 +75,9 @@ if __name__ == "__main__":
     while True:
         print("Entered Tone delivery section")
         break
+
+
+
+#### DEV NOTES #####
+# Above code is CLI use only and only for prototyping/testing prompts
+# In production, each section will be divided into a their respective function sections
