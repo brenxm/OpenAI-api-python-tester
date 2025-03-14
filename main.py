@@ -2,6 +2,7 @@ from openaiapi import get_openai_response
 from prompts import system_guidelines
 
 
+
 if __name__ == "__main__":
 
     # Initial description for curriculum generation
@@ -74,6 +75,16 @@ if __name__ == "__main__":
     # Defining the tone of delivery
     while True:
         print("Entered Tone delivery section")
+        # Delivery selection mode
+
+        # Takes the very first subtopic and generate a lecture content of it. The content should only be short (5 sentence) to act as a preview only.
+        first_topic = response.content[topics][0]
+        
+
+
+        preview_content = get_openai_response(prompt)
+
+
         break
 
 
