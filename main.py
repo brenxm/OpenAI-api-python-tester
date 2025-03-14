@@ -79,5 +79,5 @@ if __name__ == "__main__":
 
 
 #### DEV NOTES #####
-# Above code is CLI use only and only for prototyping/testing prompts
-# In production, each section will be divided into a their respective function sections
+# Above code is CLI use only and for prototyping/testing prompts
+# In production, each section will be divided into their respective function sections
