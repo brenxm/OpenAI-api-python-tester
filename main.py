@@ -1,5 +1,6 @@
 from openaiapi import get_openai_response
 from prompts import system_guidelines
+import ast
 
 
 
@@ -28,6 +29,9 @@ if __name__ == "__main__":
         else:
             # If API returns valid list
             print("OpenAI Response:", response.content)
+
+            response_dict = ast.literal_eval(response.content)
+
             prompt = input("Here is the generated list.\nWhat do you want to do now? Press:\n1 to move forward\n2 to make changes\n3 to Go back\n")
 
             # IF user's accepted the presented curriculum list
@@ -40,6 +44,9 @@ if __name__ == "__main__":
                     prompt = input("What changes you want to apply?\n")
                     response = get_openai_response(prompt, system_guidelines["modify_curriculum"](response.content), model = "gpt-4o")
                     print(response.content)
+
+                    response_dict = ast.literal_eval(response.content)
+
                     print("This is the modified list.\n")
                     action = input("What do you want to do now?\n1 to move forward\n2 to make changes\n3 to create new curriculum\n")
 
@@ -78,12 +85,26 @@ if __name__ == "__main__":
         # Delivery selection mode
 
         # Takes the very first subtopic and generate a lecture content of it. The content should only be short (5 sentence) to act as a preview only.
-        first_topic = response.content[topics][0]
-        
+        first_topic = response_dict["topics"][0]
 
+        prompt = input("Define on how the lecture body will be delivered.\n")
 
-        preview_content = get_openai_response(prompt)
+        preview_content = get_openai_response(prompt, system_guidelines["apply_delivery_tone"](first_topic), model="gpt-4o")
 
+        print(preview_content.content)
+        print("This is the preview of how the body of the lecture will be written")
+
+        action_prompt = input("What you want to do now? Press:\n1 To generate entire lecture \n2 To redo" )
+
+        if action_prompt == "1":
+            # Generates the entire lecture
+            print("Generate the entire lecture")
+
+        elif action_prompt == "2":
+            continue
+
+        else:
+            print("Invalid input, try again")
 
         break
 

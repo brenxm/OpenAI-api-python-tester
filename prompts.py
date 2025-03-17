@@ -115,6 +115,32 @@ system_guidelines = {
     ''',
 
     ##### APPLY DELIVERY TONE #####
-    "apply_delivery_tone": '''
+    # Apply the tone of the lecture
+        # Applies the persona/character to how the body of the lecture is written
+    # Get the first topic lecture to generate to display as preview to the user, This will be around 5 sentences only.
+    # Embed choices of the user
+    "apply_delivery_tone": lambda topic: f'''
+    This is one of the steps of from the step-by-step wizard of user generating an entire course/subject. 
+
+    The user just finished generating the curriculum outline (strucutre) but without the body of each topics yet.
+
+    Your role is to define how the persona, character, or instructions for how the body of the topic will be written or delivered.
+
+    You will respond with a preview with this subject:
+    {topic}
+
+    Limit your response to around 5 sentences since this is a preview.
+    The response should mimic as if the content was truncated. It implies that this is only a preview.
+
+    Your response should be in json format:
+    {{
+        "preview": STRING
+    }}
+
+    If prompt is unclear/irrelevant, return:
+    {{
+        "error": "ERROR"
+    }}
+    
     '''
 }
