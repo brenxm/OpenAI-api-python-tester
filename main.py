@@ -1,7 +1,9 @@
+from lecture_generation import lecture_body_generation
 from openaiapi import get_openai_response
 from prompts import system_guidelines
-import ast
 
+import asyncio
+import ast
 
 
 if __name__ == "__main__":
@@ -87,9 +89,9 @@ if __name__ == "__main__":
         # Takes the very first subtopic and generate a lecture content of it. The content should only be short (5 sentence) to act as a preview only.
         first_topic = response_dict["topics"][0]
 
-        prompt = input("Define on how the lecture body will be delivered.\n")
+        lecture_tone_prompt = input("Define on how the lecture body will be delivered.\n")
 
-        preview_content = get_openai_response(prompt, system_guidelines["apply_delivery_tone"](first_topic), model="gpt-4o")
+        preview_content = get_openai_response(lecture_tone_prompt, system_guidelines["apply_delivery_tone"](first_topic), model="gpt-4o")
 
         print(preview_content.content)
         print("This is the preview of how the body of the lecture will be written")
@@ -98,7 +100,8 @@ if __name__ == "__main__":
 
         if action_prompt == "1":
             # Generates the entire lecture
-            print("Generate the entire lecture")
+            print("Generating the entire lecture")
+            lecture_body_generation(response_dict, lecture_tone_prompt, preview_content.content)
 
         elif action_prompt == "2":
             continue
@@ -113,3 +116,6 @@ if __name__ == "__main__":
 #### DEV NOTES #####
 # Above code is CLI use only and for prototyping/testing prompts
 # In production, each section will be divided into their respective function sections
+
+
+

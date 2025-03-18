@@ -142,5 +142,30 @@ system_guidelines = {
         "error": "ERROR"
     }}
     
+    ''',
+    "generate_lecture": lambda lecture_dict, i, users_delivery_tone_instruction: f'''
+    The user is generating a lecture in a step-by-step process, this is the 3rd and last step where you will generate the body of each topic.
+    First, the user generated the curriculum outline/structure:
+
+    {lecture_dict}
+
+    Second, the user defined how the body of the topics will be delivered:
+    {users_delivery_tone_instruction}
+    
+    And now you have to create the body.
+
+    Guidelines:
+    1. Your task is to generate this topic's bodies:
+    {lecture_dict["topics"][i]}
+
+    2. Be comprehensive as much as possible. Max out your output token. This is a book so it has to be large
+
+    3. Return your response with json format:
+    {{
+        “topic_title”: STRING,
+        “sub_topics”: [
+                            {{“sub_topic_title”: STRING, "body": Markdown Format"}}
+                        ]
+    }},
     '''
 }
