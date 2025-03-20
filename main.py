@@ -22,6 +22,8 @@ def get_curriculum_outline():
         prompt = input("What do you want to learn?\n")
 
         response = get_openai_response( prompt, system_guidelines["generate_curriculum"], model = "gpt-4o" )
+
+        response_dict = ast.literal_eval(response.content)
         
         if "error" in response_dict:
             print("Prompt can't be understood.")
@@ -37,12 +39,12 @@ def get_curriculum_outline():
             if action_prompt == "1":
                 getting_curriculum_outline = False
                 getting_delivery_tone = True
-                return ast.literal_eval(response.content)
+                return response_dict
             
             elif action_prompt == "2":
                 modifying_curriculum_outline = True
                 getting_curriculum_outline = False
-                return ast.literal_eval(response.content)
+                return response.content
             
             elif action_prompt == "3":
                 break
@@ -51,32 +53,37 @@ def get_curriculum_outline():
                 print("Invalid prompt, try again.")
 
 
-def modify_curriculum_outline():
+def modify_curriculum_outline(response_obj):
     global getting_curriculum_outline
     global getting_delivery_tone
     global modifying_curriculum_outline
 
     while True:
         prompt = input("What changes you want to apply?\n")
-        response = get_openai_response( prompt, system_guidelines["modify_curriculum"](response.content), model = "gpt-4o" )
+        response = get_openai_response( prompt, system_guidelines["modify_curriculum"](response_obj), model = "gpt-4o" )
         print(response.content)
 
         print("This is the modified list.\n")
 
-        action = input("What do you want to do now?\n1 to move forward\n2 to make changes\n3 to create new curriculum\n")
+        action = input("What do you want to do now?\n1 to move forward\n2 to redo\n3 to create new curriculum\n")
 
-        if action == "1":
-            modifying_curriculum_outline = False
-            getting_delivery_tone = True
-            return ast.literal_eval( response.content )
-        
-        elif action == "2":
-            continue
-        
-        elif action == "3":
-            getting_curriculum_outline = True
-            modifying_curriculum_outline = False
-            break
+        while True:
+            if action == "1":
+                modifying_curriculum_outline = False
+                getting_delivery_tone = True
+                return ast.literal_eval( response.content )
+            
+            elif action == "2":
+                break
+            
+            elif action == "3":
+                getting_curriculum_outline = True
+                modifying_curriculum_outline = False
+                return
+
+            else:
+                print("Invalid input. Try again.")
+                continue
 
 
 def get_delivery_tone(response_obj):
@@ -95,18 +102,18 @@ def get_delivery_tone(response_obj):
         print("This is the preview of how the body of the lecture will be written")
         action_prompt = input("What you want to do now? Press:\n1 To generate entire lecture \n2 To redo" )
 
-        if action_prompt == "1":
-            getting_delivery_tone = False
-            ready_to_generate_entire_lecture = True
-            break
+        while True:
+            if action_prompt == "1":
+                getting_delivery_tone = False
+                ready_to_generate_entire_lecture = True
+                return lecture_tone_prompt
 
-        elif action_prompt == "2":
-            continue
+            elif action_prompt == "2":
+                break
 
-        else:
-            print("Invalid input, try again")
-
-        break
+            else:
+                print("Invalid input, try again")
+                continue
 
 
 if __name__ == "__main__":
@@ -115,7 +122,7 @@ if __name__ == "__main__":
             response_dict = get_curriculum_outline()
             
         elif modifying_curriculum_outline:
-            response_dict = modify_curriculum_outline()
+            response_dict = modify_curriculum_outline(response_dict)
 
         elif getting_delivery_tone:
             delivery_tone = get_delivery_tone( response_dict )
