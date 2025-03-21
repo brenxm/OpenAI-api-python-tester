@@ -14,7 +14,6 @@ def lecture_body_generation(curriculum_outline, tone_delivery_definition, tone_d
         dict: The completed subject
     '''
 
-    response = get_openai_response("", system_guidelines["generate_lecture"](curriculum_outline, 0,  tone_delivery_definition), model = "gpt-4o")
-
+    response = get_openai_response("", system_guidelines["generate_lecture"](curriculum_outline, 0,  tone_delivery_definition, True), model = "gpt-4o")
 
     return response.content

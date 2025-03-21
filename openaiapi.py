@@ -3,7 +3,7 @@ from key_retriever import load_api_key
 
 client = OpenAI(api_key=load_api_key())
 
-def get_openai_response(users_prompt, system_content = "You are a helpful assistant.", model="gpt-4.5-preview"):
+def get_openai_response(users_prompt, system_content = "You are a helpful assistant.", model="gpt-4.5-preview", view_total_token = False):
     """
     Function to get a response from OpenAI API
     Args:
@@ -24,6 +24,10 @@ def get_openai_response(users_prompt, system_content = "You are a helpful assist
             response_format={"type": "json_object"},
             temperature=1
         )
+
+        if view_total_token:
+            print(f"Total token used: {response.usage.total_tokens}")
+            
         return response.choices[0].message
 
     except Exception as e:

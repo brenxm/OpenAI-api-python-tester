@@ -1,22 +1,23 @@
+from enum import Enum
+import ast
+
 from lecture_generation import lecture_body_generation
 from openaiapi import get_openai_response
 from prompts import system_guidelines
 
-import asyncio
-import ast
+
+class State(Enum):
+    GETTING_CURRICULUM_OUTLINE = 0
+    MODIFYING_CURRICULUM_OUTLINE = 1
+    GETTING_DELIVERY_TONE = 2
+    READY_TO_GENERATE_ENTIRE_LECTURE = 3
 
 
-### flow states ###
-getting_curriculum_outline = True
-modifying_curriculum_outline = False
-getting_delivery_tone = False
-ready_to_generate_entire_lecture = False
+current_state = State.GETTING_CURRICULUM_OUTLINE
 
 
 def get_curriculum_outline():
-    global getting_curriculum_outline
-    global getting_delivery_tone
-    global modifying_curriculum_outline
+    global current_state
 
     while True:
         prompt = input("What do you want to learn?\n")
@@ -37,13 +38,11 @@ def get_curriculum_outline():
             action_prompt = input("What do you want to do now? Press:\n1 to move forward\n2 to make changes\n3 to redo")
 
             if action_prompt == "1":
-                getting_curriculum_outline = False
-                getting_delivery_tone = True
+                current_state = State.GETTING_DELIVERY_TONE
                 return response_dict
             
             elif action_prompt == "2":
-                modifying_curriculum_outline = True
-                getting_curriculum_outline = False
+                current_state = State.MODIFYING_CURRICULUM_OUTLINE
                 return response.content
             
             elif action_prompt == "3":
@@ -54,10 +53,8 @@ def get_curriculum_outline():
 
 
 def modify_curriculum_outline(response_obj):
-    global getting_curriculum_outline
-    global getting_delivery_tone
-    global modifying_curriculum_outline
-
+    global current_state
+    
     while True:
         prompt = input("What changes you want to apply?\n")
         response = get_openai_response( prompt, system_guidelines["modify_curriculum"](response_obj), model = "gpt-4o" )
@@ -69,16 +66,14 @@ def modify_curriculum_outline(response_obj):
 
         while True:
             if action == "1":
-                modifying_curriculum_outline = False
-                getting_delivery_tone = True
+                current_state = State.GETTING_DELIVERY_TONE
                 return ast.literal_eval( response.content )
             
             elif action == "2":
                 break
             
             elif action == "3":
-                getting_curriculum_outline = True
-                modifying_curriculum_outline = False
+                current_state = State.GETTING_CURRICULUM_OUTLINE
                 return
 
             else:
@@ -87,10 +82,7 @@ def modify_curriculum_outline(response_obj):
 
 
 def get_delivery_tone(response_obj):
-    global getting_curriculum_outline
-    global getting_delivery_tone
-    global modifying_curriculum_outline
-    global ready_to_generate_entire_lecture
+    global current_state
 
     print("Entered Tone delivery section")
 
@@ -104,8 +96,7 @@ def get_delivery_tone(response_obj):
 
         while True:
             if action_prompt == "1":
-                getting_delivery_tone = False
-                ready_to_generate_entire_lecture = True
+                current_state = State.READY_TO_GENERATE_ENTIRE_LECTURE
                 return lecture_tone_prompt
 
             elif action_prompt == "2":
@@ -118,16 +109,16 @@ def get_delivery_tone(response_obj):
 
 if __name__ == "__main__":
     while True:
-        if getting_curriculum_outline:
+        if current_state == State.GETTING_CURRICULUM_OUTLINE:
             response_dict = get_curriculum_outline()
             
-        elif modifying_curriculum_outline:
+        elif current_state == State.MODIFYING_CURRICULUM_OUTLINE:
             response_dict = modify_curriculum_outline(response_dict)
 
-        elif getting_delivery_tone:
+        elif current_state == State.GETTING_DELIVERY_TONE:
             delivery_tone = get_delivery_tone( response_dict )
 
-        elif ready_to_generate_entire_lecture:
+        elif current_state == State.READY_TO_GENERATE_ENTIRE_LECTURE:
             lecture_obj = lecture_body_generation(response_dict, delivery_tone, "")
             break
 
