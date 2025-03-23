@@ -1,9 +1,12 @@
 from openaiapi import get_openai_response
-from prompts import system_guidelines 
+from prompts import system_guidelines   
+
+import asyncio
+
 
 ## Creation topics bodies
 # Returns the full completed lecture body
-def lecture_body_generation(curriculum_outline, tone_delivery_definition, tone_delivery_preview):
+async def lecture_body_generation(curriculum_outline, tone_delivery_definition, tone_delivery_preview):
     '''
     Generate the bodies of all the topics
     Args:
@@ -14,6 +17,22 @@ def lecture_body_generation(curriculum_outline, tone_delivery_definition, tone_d
         dict: The completed subject
     '''
 
-    response = get_openai_response("", system_guidelines["generate_lecture"](curriculum_outline, 0,  tone_delivery_definition), model = "gpt-4o", view_total_token = True)
+    topics_count = len(curriculum_outline["topics"])
 
-    return response.content
+    async def generate_topic_body(index):
+        response = await get_openai_response(
+            "",
+            system_guidelines["generate_lecture"](curriculum_outline, index, tone_delivery_definition),
+            model="gpt-4o",
+            view_total_token=True
+        )
+
+        return response.content
+
+    tasks = [generate_topic_body(i) for i in range(topics_count)]
+
+    results = await asyncio.gather(*tasks)
+
+    completed_subject = {f"topic_{i}": result for i, result in enumerate(results)}
+
+    return completed_subject

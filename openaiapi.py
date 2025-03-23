@@ -1,9 +1,10 @@
 from openai import OpenAI
+import asyncio
 from key_retriever import load_api_key
 
 client = OpenAI(api_key=load_api_key())
 
-def get_openai_response(users_prompt, system_content = "You are a helpful assistant.", model="gpt-4.5-preview", view_total_token = False):
+async def get_openai_response(users_prompt, system_content = "You are a helpful assistant.", model="gpt-4.5-preview", view_total_token = False):
     """
     Function to get a response from OpenAI API
     Args:

@@ -1,4 +1,5 @@
 from enum import Enum
+import asyncio
 import ast
 
 from lecture_generation import lecture_body_generation
@@ -16,13 +17,13 @@ class State(Enum):
 current_state = State.GETTING_CURRICULUM_OUTLINE
 
 
-def get_curriculum_outline():
+async def get_curriculum_outline():
     global current_state
 
     while True:
         prompt = input("What do you want to learn?\n")
 
-        response = get_openai_response( prompt, system_guidelines["generate_curriculum"], model = "gpt-4o" )
+        response = await get_openai_response( prompt, system_guidelines["generate_curriculum"], model = "gpt-4o" )
 
         response_dict = ast.literal_eval(response.content)
         
@@ -52,12 +53,12 @@ def get_curriculum_outline():
                 print("Invalid prompt, try again.")
 
 
-def modify_curriculum_outline(response_obj):
+async def modify_curriculum_outline(response_obj):
     global current_state
     
     while True:
         prompt = input("What changes you want to apply?\n")
-        response = get_openai_response( prompt, system_guidelines["modify_curriculum"](response_obj), model = "gpt-4o" )
+        response = await get_openai_response( prompt, system_guidelines["modify_curriculum"](response_obj), model = "gpt-4o" )
         print(response.content)
 
         print("This is the modified list.\n")
@@ -81,7 +82,7 @@ def modify_curriculum_outline(response_obj):
                 continue
 
 
-def get_delivery_tone(response_obj):
+async def get_delivery_tone(response_obj):
     global current_state
 
     print("Entered Tone delivery section")
@@ -89,7 +90,7 @@ def get_delivery_tone(response_obj):
     while True:
         first_topic = response_obj["topics"][0]
         lecture_tone_prompt = input("Define on how the lecture body will be delivered.\n")
-        preview_content = get_openai_response(lecture_tone_prompt, system_guidelines["apply_delivery_tone"](first_topic), model="gpt-4o")
+        preview_content = await get_openai_response(lecture_tone_prompt, system_guidelines["apply_delivery_tone"](first_topic), model="gpt-4o")
         print(preview_content.content)
         print("This is the preview of how the body of the lecture will be written")
         action_prompt = input("What you want to do now? Press:\n1 To generate entire lecture \n2 To redo" )
@@ -107,23 +108,29 @@ def get_delivery_tone(response_obj):
                 continue
 
 
-if __name__ == "__main__":
+async def main():
     while True:
         if current_state == State.GETTING_CURRICULUM_OUTLINE:
-            response_dict = get_curriculum_outline()
+            response_dict = await get_curriculum_outline()
             
         elif current_state == State.MODIFYING_CURRICULUM_OUTLINE:
-            response_dict = modify_curriculum_outline(response_dict)
+            response_dict = await modify_curriculum_outline(response_dict)
 
         elif current_state == State.GETTING_DELIVERY_TONE:
-            delivery_tone = get_delivery_tone( response_dict )
+            delivery_tone = await get_delivery_tone( response_dict )
 
         elif current_state == State.READY_TO_GENERATE_ENTIRE_LECTURE:
-            lecture_obj = lecture_body_generation(response_dict, delivery_tone, "")
+            lecture_obj = await lecture_body_generation(response_dict, delivery_tone, "")
             break
 
     print("This is the generated lecture")
     print( lecture_obj )
+    
+
+if __name__ == "__main__":
+
+    asyncio.run(main())
+
 
 #### DEV NOTES #####
 # Above code is CLI use only and for prototyping/testing prompts
