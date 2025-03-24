@@ -1,5 +1,4 @@
 from openai import AsyncOpenAI
-import asyncio
 from key_retriever import load_api_key
 
 client = AsyncOpenAI(api_key=load_api_key())
