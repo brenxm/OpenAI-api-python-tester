@@ -2,6 +2,7 @@ from openaiapi import get_openai_response
 from prompts import system_guidelines   
 
 import asyncio
+import random
 
 
 ## Creation topics bodies
@@ -20,6 +21,7 @@ async def lecture_body_generation(curriculum_outline, tone_delivery_definition, 
     topics_count = len(curriculum_outline["topics"])
 
     async def generate_topic_body(index):
+        print(f"generating topic number: {index + 1}")
         response = await get_openai_response(
             "",
             system_guidelines["generate_lecture"](curriculum_outline, index, tone_delivery_definition),

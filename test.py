@@ -3,6 +3,7 @@ import random
 import time
 
 async def task(i):
+    print(f"start task {i}")
     await asyncio.sleep(random.randint(2,5))
     print(f"task {i} completed")
 
