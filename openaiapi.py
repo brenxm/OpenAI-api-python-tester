@@ -28,7 +28,7 @@ async def get_openai_response(users_prompt, system_content = "You are a helpful 
         if view_total_token:
             print(f"Total token used: {response.usage.total_tokens}")
             
-        return response.choices[0].message
+        return (response.choices[0].message, response.usage.total_tokens)
 
     except Exception as e:
         return f"Error: {str(e)}"
