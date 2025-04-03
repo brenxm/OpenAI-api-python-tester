@@ -1,6 +1,7 @@
 from enum import Enum
 import asyncio
 import ast
+from pprint import pprint
 
 from lecture_generation import lecture_body_generation
 from openaiapi import get_openai_response
@@ -137,7 +138,7 @@ async def main():
             break
 
     print("This is the generated lecture")
-    print( lecture_obj[0] )
+    pprint(lecture_obj[0], indent=3)
     print(f"Total token used: {total_token_used + lecture_obj[1]}")
     
 
