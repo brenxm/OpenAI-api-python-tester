@@ -18,8 +18,6 @@ class State(Enum):
 current_state = State.GETTING_CURRICULUM_OUTLINE
 total_token_used = 0
 
-
-
 async def get_curriculum_outline():
     global current_state
     global total_token_used
@@ -138,7 +136,23 @@ async def main():
             break
 
     print("This is the generated lecture")
-    pprint(lecture_obj[0], indent=3)
+
+    content = lecture_obj[0][0]["sub_topics"][0]["body"]
+
+    print(f"This is the example body content: {content}")
+
+    # Define the file path ('.' means current directory)
+    file_path = './output.md'  # Adding a filename since '.' is just the directory
+
+    # Write the content to a Markdown file
+    try:
+        with open(file_path, 'w') as md_file:
+            md_file.write(content)
+        print(f"Successfully wrote to {file_path}")
+    except Exception as e:
+        print(f"Error writing to file: {e}")
+
+
     print(f"Total token used: {total_token_used + lecture_obj[1]}")
     
 

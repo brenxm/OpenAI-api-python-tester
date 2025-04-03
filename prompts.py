@@ -152,7 +152,7 @@ system_guidelines = {
     Second, the user defined how the body of the topics will be delivered:
     {users_delivery_tone_instruction}
     
-    And now you have to create the body.
+    And now your task is to generate the body of the given topic.
 
     Guidelines:
     1. Your task is to generate this topic's bodies:
@@ -160,11 +160,13 @@ system_guidelines = {
 
     2. Be comprehensive as much as possible. Max out your output token. This is a book so it has to be large
 
-    3. Return your response with json format:
+    3. If applicable, provide Examples such as examples with heading or label, case studies, demonstrations, sample problems or exemplars.
+
+    4. Return your response with json format:
     {{
         “topic_title”: STRING,
         “sub_topics”: [
-                            {{“sub_topic_title”: STRING, "body": Markdown Format"}}
+                            {{“sub_topic_title”: STRING, "body": Markdown format"}}
                         ]
     }},
     '''
